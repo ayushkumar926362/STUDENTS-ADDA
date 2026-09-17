@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Adda - Test Series & CBT Portal</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- FIREBASE SDKs (v9 Compat Mode) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .bg-academic-mesh {
+      background-color: #f8fafc;
+      background-image: 
+        radial-gradient(at 12% 10%, rgba(16, 185, 129, 0.09) 0px, transparent 48%),
+        radial-gradient(at 88% 18%, rgba(99, 102, 241, 0.08) 0px, transparent 48%),
+        radial-gradient(at 50% 75%, rgba(20, 184, 166, 0.07) 0px, transparent 50%),
+        radial-gradient(at 90% 90%, rgba(245, 158, 11, 0.05) 0px, transparent 40%),
+        radial-gradient(rgba(148, 163, 184, 0.18) 1.2px, transparent 1.2px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 26px 26px;
+      background-attachment: fixed;
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-16px) scale(1.05); }
+    }
+    @keyframes floatReverse {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(18px) scale(0.96); }
+    }
+    .ambient-orb-1 {
+      animation: floatSlow 12s ease-in-out infinite;
+    }
+    .ambient-orb-2 {
+      animation: floatReverse 15s ease-in-out infinite;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    
+    .palette-answered { background-color: #16a34a !important; color: white !important; }
+    .palette-not-answered { background-color: #e11d48 !important; color: white !important; }
+    .palette-marked { background-color: #8b5cf6 !important; color: white !important; }
+    .palette-marked-answered { background-color: #7c3aed !important; color: #fde047 !important; position: relative; }
+    .palette-marked-answered::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 6px;
+      height: 6px;
+      background-color: #22c55e;
+      border-radius: 50%;
+    }
+    .palette-not-visited { background-color: #f1f5f9 !important; color: #475569 !important; border: 1px solid #cbd5e1 !important; }
+    .palette-active { outline: 3px solid #3b82f6 !important; outline-offset: 1px; }
+
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.02); }
+    }
+    .pulse-urgent { animation: pulseSoft 1.5s infinite; }
+  </style>
+</head>
+<body class="bg-academic-mesh text-slate-800 antialiased min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white relative overflow-x-hidden">
+
+  <!-- DYNAMIC AMBIENT LIGHT ORBS -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0" aria-hidden="true">
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-br from-emerald-400/20 via-teal-300/15 to-transparent rounded-full blur-3xl ambient-orb-1"></div>
+    <div class="absolute top-12 -right-28 w-[30rem] h-[30rem] bg-gradient-to-bl from-indigo-500/15 via-purple-400/10 to-transparent rounded-full blur-3xl ambient-orb-2"></div>
+    <div class="absolute -bottom-20 left-1/3 w-[26rem] h-[26rem] bg-gradient-to-tr from-teal-400/15 via-amber-300/10 to-transparent rounded-full blur-3xl ambient-orb-1"></div>
+  </div>
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo: Student Adda (SA) -->
+      <div class="flex items-center gap-3 cursor-pointer" onclick="handleLogoClick()">
+        <div class="relative group">
+          <svg class="w-11 h-11 drop-shadow-md shrink-0 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="saShieldBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#064e3b"/>
+                <stop offset="45%" stop-color="#0f766e"/>
+                <stop offset="100%" stop-color="#1e1b4b"/>
+              </linearGradient>
+              <linearGradient id="saGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fef08a"/>
+                <stop offset="50%" stop-color="#f59e0b"/>
+                <stop offset="100%" stop-color="#b45309"/>
+              </linearGradient>
+            </defs>
+            <path d="M50 6 L88 20 C88 58 68 83 50 94 C32 83 12 58 12 20 Z" fill="url(#saShieldBg)" stroke="url(#saGold)" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M50 12 L82 24 C82 54 65 77 50 86 C35 77 18 54 18 24 Z" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
+            <path d="M50 16 L68 24 L50 32 L32 24 Z" fill="url(#saGold)"/>
+            <path d="M42 30.5 V35.5 C42 37.5 45.5 40 50 40 C54.5 40 58 37.5 58 35.5 V30.5" stroke="url(#saGold)" stroke-width="1.5" fill="none"/>
+            <path d="M64 26 V35 L61 37" stroke="#fef08a" stroke-width="1.2" fill="none"/>
+            <text x="36" y="60" fill="#ffffff" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle" letter-spacing="-1">S</text>
+            <text x="64" y="60" fill="url(#saGold)" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle" letter-spacing="-1">A</text>
+            <path d="M50 68 C42 63 32 64 25 67 L25 74 C32 71 42 70 50 75 C58 70 68 71 75 74 L75 67 C68 64 58 63 50 68 Z" fill="url(#saGold)"/>
+            <line x1="50" y1="68" x2="50" y2="75" stroke="#78350f" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <span class="font-black text-base sm:text-lg tracking-tight text-slate-900 leading-none">STUDENT ADDA</span>
+            <span class="text-[10px] uppercase tracking-wider bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">Free CBT</span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">लक्ष्य आपकी, सफलता हमारी</p>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <a href="https://t.me/studentquiz1" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-200 text-xs font-bold transition shadow-sm">
+          <i class="fa-brands fa-telegram text-sm"></i>
+          <span class="hidden md:inline">Telegram</span>
+        </a>
+
+        <a href="http://www.youtube.com/@students_adda_1" target="_blank" rel="noopener noreferrer" 
+           class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition shadow-sm">
+          <i class="fa-brands fa-youtube text-sm"></i>
+          <span class="hidden md:inline">YouTube</span>
+        </a>
+
+        <!-- Language Selector -->
+        <div class="relative">
+          <button onclick="toggleLanguageDropdown()" id="lang-btn" 
+                  class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition border border-slate-200">
+            <i class="fa-solid fa-globe text-emerald-600"></i>
+            <span id="current-lang-text">Language: English</span>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+          </button>
+          
+          <div id="lang-dropdown-menu" class="hidden absolute right-0 mt-1.5 w-44 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50 text-xs">
+            <div class="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select Language</div>
+            <button onclick="selectAppLanguage('en')" class="w-full text-left px-3 py-2 hover:bg-slate-100 font-medium text-slate-700 flex items-center justify-between">
+              <span>English (Default)</span>
+              <span id="check-lang-en" class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i></span>
+            </button>
+            <button onclick="selectAppLanguage('hi')" class="w-full text-left px-3 py-2 hover:bg-slate-100 font-medium text-slate-700 flex items-center justify-between">
+              <span>हिंदी (Hindi)</span>
+              <span id="check-lang-hi" class="text-emerald-600 font-bold hidden"><i class="fa-solid fa-check"></i></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- User Profile & Logout -->
+        <div id="nav-user-profile" class="hidden items-center gap-2 pl-2 border-l border-slate-200">
+          <div class="hidden lg:block text-right">
+            <p id="nav-user-name" class="text-xs font-bold text-slate-900 leading-tight">Student</p>
+            <p id="nav-user-phone" class="text-[10px] text-slate-500 font-mono">9876543210</p>
+          </div>
+          <button onclick="logoutCandidate()" title="Logout" 
+                  class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-600 flex items-center justify-center transition border border-slate-200">
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-start relative z-10">
+
+    <!-- SCREEN 1: LOGIN & REGISTRATION -->
+    <section id="auth-screen" class="my-auto py-6 sm:py-10 max-w-md mx-auto w-full">
+      <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl shadow-slate-300/40 border border-slate-200/90 overflow-hidden transition-all duration-300">
+        
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-6 sm:p-8 text-white relative">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <svg class="w-14 h-14 drop-shadow-xl shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 6 L88 20 C88 58 68 83 50 94 C32 83 12 58 12 20 Z" fill="url(#saShieldBg)" stroke="url(#saGold)" stroke-width="3.5" stroke-linejoin="round"/>
+                <path d="M50 12 L82 24 C82 54 65 77 50 86 C35 77 18 54 18 24 Z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+                <path d="M50 16 L68 24 L50 32 L32 24 Z" fill="url(#saGold)"/>
+                <text x="36" y="60" fill="#ffffff" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle">S</text>
+                <text x="64" y="60" fill="url(#saGold)" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle">A</text>
+                <path d="M50 68 C42 63 32 64 25 67 L25 74 C32 71 42 70 50 75 C58 70 68 71 75 74 L75 67 C68 64 58 63 50 68 Z" fill="url(#saGold)"/>
+              </svg>
+              <div>
+                <span class="text-[10px] font-bold tracking-wider uppercase text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-700/50">100% Free Portal</span>
+                <p class="text-xs text-slate-300 font-semibold mt-0.5">Premier Exam Prep</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="https://t.me/studentquiz1" target="_blank" 
+                 class="px-2.5 py-1 bg-sky-600/30 hover:bg-sky-600/50 text-sky-300 border border-sky-500/30 rounded-lg text-xs font-semibold transition flex items-center gap-1">
+                <i class="fa-brands fa-telegram text-xs"></i>
+                <span>Telegram</span>
+              </a>
+            </div>
+          </div>
+          
+          <h2 class="text-xl sm:text-2xl font-black mt-4 tracking-tight" id="auth-main-title">
+            Welcome to Student Adda
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-300 mt-1" id="auth-subtitle">
+            Free Targeted Mock Tests with 25 Sets & 100 Questions (60 Min)
+          </p>
+        </div>
+
+        <div class="flex border-b border-slate-200 bg-slate-50/70 p-1.5 gap-1.5">
+          <button id="tab-login" onclick="switchAuthTab('login')" 
+                  class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition shadow-sm bg-white text-slate-900 border border-slate-200">
+            Student Login
+          </button>
+          <button id="tab-register" onclick="switchAuthTab('register')" 
+                  class="flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-slate-500 hover:text-slate-800">
+            New Registration
+          </button>
+        </div>
+
+        <div class="p-6 sm:p-8 space-y-4">
+          <div id="field-name-container" class="hidden space-y-1.5">
+            <label class="block text-xs font-bold text-slate-700" id="label-name">
+              Student Full Name <span class="text-rose-500">*</span>
+            </label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i class="fa-regular fa-user text-sm"></i>
+              </div>
+              <input type="text" id="input-name" placeholder="Enter student's full name"
+                     class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-xs sm:text-sm transition">
+            </div>
+            <p id="error-name" class="hidden text-[11px] text-rose-500 font-medium"></p>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-slate-700" id="label-phone">
+                Mobile Number (10 Digits) <span class="text-rose-500">*</span>
+              </label>
+              <span class="text-[10px] text-emerald-600 font-mono font-bold" id="badge-digits-phone">Exact 10 digits</span>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500 font-bold text-xs">
+                +91
+              </div>
+              <input type="tel" id="input-phone" maxlength="10" placeholder="e.g. 9876543210"
+                     class="w-full pl-12 pr-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-xs sm:text-sm font-mono tracking-wider transition"
+                     oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+            </div>
+            <p id="error-phone" class="hidden text-[11px] text-rose-500 font-medium"></p>
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-bold text-slate-700" id="label-password">
+                Password <span class="text-rose-500">*</span>
+              </label>
+              <span class="text-[10px] text-slate-500" id="badge-pwd-min">Min. 6 characters</span>
+            </div>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <i class="fa-solid fa-lock text-sm"></i>
+              </div>
+              <input type="password" id="input-password" placeholder="Password (min 6 chars)"
+                     class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-xs sm:text-sm transition">
+              <button type="button" onclick="togglePasswordVisibility('input-password', 'pwd-eye-icon')" 
+                      class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600">
+                <i class="fa-regular fa-eye text-sm" id="pwd-eye-icon"></i>
+              </button>
+            </div>
+            <p id="error-password" class="hidden text-[11px] text-rose-500 font-medium"></p>
+          </div>
+
+          <button type="button" id="btn-auth-submit" onclick="handleAuthSubmit()"
+                  class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-sm shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 mt-2">
+            <span id="btn-auth-text">Login to Dashboard</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SCREEN 2: DASHBOARD & EXAM SELECTION -->
+    <section id="dashboard-screen" class="hidden space-y-8 py-4">
+      <div class="bg-gradient-to-r from-emerald-600 via-teal-700 to-indigo-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold backdrop-blur border border-white/15">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span id="dash-badge">Targeted Exam Prep</span>
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-black tracking-tight" id="dash-greeting">
+            Welcome, Aspirant!
+          </h2>
+          <p class="text-xs sm:text-sm text-emerald-100 max-w-xl" id="dash-motto">
+            Select your target examination below. Each exam contains 25 full mock sets of 100 questions with 60 minutes countdown timer — completely FREE!
+          </p>
+        </div>
+
+        <div class="bg-black/20 rounded-2xl p-4 border border-white/10 backdrop-blur w-full md:w-auto text-xs space-y-2">
+          <p class="font-bold text-slate-200 uppercase tracking-wider text-[10px]">Official Support & Community</p>
+          <div class="flex flex-col sm:flex-row md:flex-col gap-2">
+            <a href="http://www.youtube.com/@students_adda_1" target="_blank" class="flex items-center gap-2 text-red-300 hover:text-white transition">
+              <i class="fa-brands fa-youtube text-base text-red-400"></i>
+              <span class="font-semibold">Student Adda YouTube</span>
+            </a>
+            <a href="https://t.me/studentquiz1" target="_blank" class="flex items-center gap-2 text-sky-300 hover:text-white transition">
+              <i class="fa-brands fa-telegram text-base text-sky-400"></i>
+              <span class="font-semibold">Telegram Channel</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Target Exams Grid -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h3 class="text-lg sm:text-xl font-black text-slate-900" id="title-targeted-exams">Targeted Examinations</h3>
+            <p class="text-xs text-slate-500" id="desc-targeted-exams">Choose one of the 4 designated exams to view all 25 test sets (All Free)</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          
+          <!-- Exam 1: Bihar Police -->
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-indigo-500/80 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-700 to-blue-900 p-2 text-white flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-md">
+                  <svg viewBox="0 0 100 100" class="w-full h-full fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M50 8 L85 22 V52 C85 75 50 92 50 92 C50 92 15 75 15 52 V22 Z" fill="#1e1b4b" stroke="#fde047" stroke-width="4"/>
+                    <path d="M50 25 L55 37 H68 L57 45 L61 58 L50 50 L39 58 L43 45 L32 37 H45 Z" fill="#fbbf24" stroke="none"/>
+                    <circle cx="50" cy="50" r="28" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+                    <path d="M35 70 Q50 78 65 70" stroke="#fde047" stroke-width="3"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+                  FREE / निःशुल्क
+                </span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">Exam 1</span>
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Bihar Police (Constable)</h4>
+                <p class="text-xs text-slate-500 font-medium">बिहार पुलिस कांस्टेबल भर्ती परीक्षा</p>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                <span><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> 25 Mock Sets</span>
+                <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i> 60 Min / Set</span>
+              </div>
+              <div class="text-[11px] text-indigo-600 font-semibold bg-indigo-50 px-2.5 py-1 rounded-lg" id="badge-bp-total-q">
+                प्रश्न संख्या: 1 से 2500 तक
+              </div>
+            </div>
+            <button onclick="openExamSetSelection('bihar_police')" 
+                    class="mt-4 w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow flex items-center justify-center gap-2">
+              <span>View 25 Test Sets</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Exam 2: Bihar Daroga -->
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-emerald-500/80 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-700 to-teal-950 p-2 text-white flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-md">
+                  <svg viewBox="0 0 100 100" class="w-full h-full fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="50" cy="50" r="42" fill="#064e3b" stroke="#fde047" stroke-width="4"/>
+                    <path d="M35 32 L38 41 H48 L40 47 L43 57 L35 51 L27 57 L30 47 L22 41 H32 Z" fill="#fbbf24" stroke="none"/>
+                    <path d="M65 32 L68 41 H78 L70 47 L73 57 L65 51 L57 57 L60 47 L52 41 H62 Z" fill="#fbbf24" stroke="none"/>
+                    <rect x="25" y="66" width="50" height="8" rx="4" fill="#fde047" stroke="none"/>
+                    <text x="50" y="86" fill="#ffffff" font-size="10" font-weight="900" text-anchor="middle">SUB-INSPECTOR</text>
+                  </svg>
+                </div>
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+                  FREE / निःशुल्क
+                </span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Exam 2</span>
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Bihar Daroga</h4>
+                <p class="text-xs text-slate-500 font-medium">बिहार दारोगा (SI) प्रारंभिक एवं मुख्य परीक्षा</p>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                <span><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> 25 Mock Sets</span>
+                <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i> 60 Min / Set</span>
+              </div>
+              <div class="text-[11px] text-emerald-600 font-semibold bg-indigo-50 px-2.5 py-1 rounded-lg" id="badge-si-total-q">
+                प्रश्न संख्या: 1 से 2600 तक (Daroga Pool)
+              </div>
+            </div>
+            <button onclick="openExamSetSelection('bihar_daroga')" 
+                    class="mt-4 w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow flex items-center justify-center gap-2">
+              <span>View 25 Test Sets</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Exam 3: Reasoning -->
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-amber-500/80 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-700 p-2 text-white flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-md">
+                  <svg viewBox="0 0 100 100" class="w-full h-full fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="50" cy="50" r="42" fill="#78350f" stroke="#fde047" stroke-width="4"/>
+                    <path d="M46 25 C30 25 24 38 24 50 C24 64 34 75 46 75 V25 Z" fill="#fbbf24" stroke="#ffffff" stroke-width="2"/>
+                    <path d="M54 25 C70 25 76 38 76 50 C76 64 66 75 54 75 V25 Z" fill="#f59e0b" stroke="#ffffff" stroke-width="2"/>
+                    <circle cx="35" cy="40" r="3" fill="#ffffff"/>
+                    <circle cx="65" cy="40" r="3" fill="#ffffff"/>
+                    <circle cx="36" cy="60" r="3" fill="#ffffff"/>
+                    <circle cx="64" cy="60" r="3" fill="#ffffff"/>
+                    <line x1="35" y1="40" x2="65" y2="40" stroke="#ffffff" stroke-width="2"/>
+                    <line x1="36" y1="60" x2="64" y2="60" stroke="#ffffff" stroke-width="2"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+                  FREE / निःशुल्क
+                </span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Exam 3</span>
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Reasoning</h4>
+                <p class="text-xs text-slate-500 font-medium">तर्कशक्ति (वर्बल व नॉन-वर्बल रीजनिंग)</p>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                <span><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> 25 Mock Sets</span>
+                <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i> 60 Min / Set</span>
+              </div>
+              <div class="text-[11px] text-amber-600 font-semibold bg-amber-50 px-2.5 py-1 rounded-lg">
+                100 Questions per test set
+              </div>
+            </div>
+            <button onclick="openExamSetSelection('reasoning')" 
+                    class="mt-4 w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition shadow flex items-center justify-center gap-2">
+              <span>View 25 Test Sets</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <!-- Exam 4: Maths -->
+          <div class="bg-white rounded-2xl border border-slate-200 hover:border-rose-500/80 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-600 to-pink-900 p-2 text-white flex items-center justify-center group-hover:scale-110 transition duration-300 shadow-md">
+                  <svg viewBox="0 0 100 100" class="w-full h-full fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="50" cy="50" r="42" fill="#881337" stroke="#fde047" stroke-width="4"/>
+                    <path d="M68 28 H34 L52 50 L34 72 H68" stroke="#ffffff" stroke-width="6" fill="none"/>
+                    <circle cx="68" cy="40" r="3" fill="#fde047" stroke="none"/>
+                    <circle cx="68" cy="60" r="3" fill="#fde047" stroke="none"/>
+                  </svg>
+                </div>
+                <span class="text-xs font-black text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full border border-emerald-300">
+                  FREE / निःशुल्क
+                </span>
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-600 bg-rose-50 px-2 py-0.5 rounded">Exam 4</span>
+                <h4 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Maths</h4>
+                <p class="text-xs text-slate-500 font-medium">गणित (अंकगणित, एडवांस मैथ्स, डीआई)</p>
+              </div>
+              <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
+                <span><i class="fa-solid fa-layer-group text-slate-400 mr-1"></i> 25 Mock Sets</span>
+                <span><i class="fa-regular fa-clock text-slate-400 mr-1"></i> 60 Min / Set</span>
+              </div>
+              <div class="text-[11px] text-rose-600 font-semibold bg-rose-50 px-2.5 py-1 rounded-lg">
+                100 Questions per test set
+              </div>
+            </div>
+            <button onclick="openExamSetSelection('maths')" 
+                    class="mt-4 w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition shadow flex items-center justify-center gap-2">
+              <span>View 25 Test Sets</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: SET SELECTION -->
+    <section id="set-selection-screen" class="hidden space-y-6 py-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+        <div class="flex items-center gap-3">
+          <button onclick="showScreen('dashboard-screen')" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition">
+            <i class="fa-solid fa-arrow-left text-sm"></i>
+          </button>
+          <div>
+            <div class="flex items-center gap-2">
+              <span id="set-exam-badge" class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-700">Exam</span>
+              <h3 id="set-selection-exam-title" class="text-lg sm:text-xl font-black text-slate-900">Bihar Police (Constable)</h3>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">25 Full Length Mock Tests • All 25 Sets are 100% Free</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 text-xs">
+          <a href="https://t.me/studentquiz1" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-bold shadow transition flex items-center gap-1.5">
+            <i class="fa-brands fa-telegram"></i>
+            <span>Join Telegram Group</span>
+          </a>
+        </div>
+      </div>
+
+      <div id="sets-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
+        <!-- 25 Test set cards generated dynamically -->
+      </div>
+    </section>
+
+    <!-- SCREEN 4: CBT ENGINE SCREEN -->
+    <section id="cbt-screen" class="hidden space-y-4 py-2 flex-1 flex-col">
+      <div class="bg-slate-900 text-white rounded-2xl p-3.5 sm:p-4 shadow-lg flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <svg class="w-10 h-10 drop-shadow shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M50 6 L88 20 C88 58 68 83 50 94 C32 83 12 58 12 20 Z" fill="url(#saShieldBg)" stroke="url(#saGold)" stroke-width="3"/>
+            <path d="M50 16 L68 24 L50 32 L32 24 Z" fill="url(#saGold)"/>
+            <text x="36" y="60" fill="#ffffff" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle">S</text>
+            <text x="64" y="60" fill="url(#saGold)" font-family="'Inter', sans-serif" font-weight="900" font-size="25" text-anchor="middle">A</text>
+            <path d="M50 68 C42 63 32 64 25 67 L25 74 C32 71 42 70 50 75 C58 70 68 71 75 74 L75 67 C68 64 58 63 50 68 Z" fill="url(#saGold)"/>
+          </svg>
+          <div>
+            <h4 id="exam-header-title" class="text-sm sm:text-base font-bold text-white leading-tight">Mock Test Set 01</h4>
+            <p id="exam-user-tag" class="text-[11px] text-slate-300">Candidate: Student • 100 Questions (60 Min)</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3 ml-auto">
+          <div class="bg-slate-800 border border-slate-700 px-3.5 py-1.5 rounded-xl flex items-center gap-2">
+            <i class="fa-regular fa-clock text-amber-400 text-sm"></i>
+            <span class="text-xs text-slate-300">Time Left:</span>
+            <span id="exam-timer" class="font-mono font-black text-sm sm:text-base text-white">60:00</span>
+          </div>
+
+          <button onclick="confirmSubmitExam()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+            <i class="fa-solid fa-flag-checkered"></i>
+            <span>Submit Test</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+        <div class="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden min-h-[460px]">
+          <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-700 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-sm" id="current-q-index-badge">
+                Question: 1 / 100
+              </span>
+              <span id="current-q-category" class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-lg">
+                General
+              </span>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded border border-emerald-200" id="cbt-marking-correct">+1.0 Correct</span>
+              <span class="text-rose-600 font-semibold bg-rose-50 px-2 py-1 rounded border border-rose-200" id="cbt-marking-wrong">-0.2 Wrong</span>
+            </div>
+          </div>
+
+          <div class="p-5 sm:p-6 flex-1 overflow-y-auto custom-scrollbar space-y-6">
+            <div>
+              <h3 id="question-text-hi" class="text-base sm:text-lg font-bold text-slate-900 leading-relaxed">
+                Loading question...
+              </h3>
+            </div>
+
+            <div id="options-container" class="space-y-3">
+              <!-- Options dynamic -->
+            </div>
+          </div>
+
+          <div class="p-4 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <button onclick="navigateQuestion(-1)" id="btn-prev-q" class="px-3.5 py-2 rounded-xl bg-white border border-slate-300 hover:bg-slate-100 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-chevron-left text-[10px]"></i> Previous
+              </button>
+              <button onclick="clearCurrentAnswer()" class="px-3 py-2 rounded-xl bg-white border border-slate-300 hover:bg-rose-50 hover:text-rose-600 text-slate-600 text-xs font-semibold transition">
+                Clear Selection
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="toggleMarkForReview()" id="btn-mark-review" class="px-3.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-regular fa-bookmark"></i> Mark for Review & Next
+              </button>
+              <button onclick="saveAndNextQuestion()" id="btn-save-next" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition flex items-center gap-1.5">
+                Save & Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 100 Question Palette -->
+        <div class="lg:col-span-4 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm p-4 space-y-4">
+          <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center justify-between">
+            <span>Question Palette</span>
+            <span id="palette-counter" class="text-emerald-700 font-mono">100 Questions</span>
+          </h4>
+
+          <div class="grid grid-cols-2 gap-2 text-[11px] p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-emerald-600 inline-block"></span>
+              <span>Answered</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-rose-600 inline-block"></span>
+              <span>Not Answered</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-purple-600 inline-block"></span>
+              <span>Marked Review</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-4 h-4 rounded bg-slate-100 border border-slate-300 inline-block"></span>
+              <span>Not Visited</span>
+            </div>
+          </div>
+
+          <div class="flex-1 overflow-y-auto max-h-[380px] custom-scrollbar p-1">
+            <div id="palette-grid" class="grid grid-cols-5 sm:grid-cols-6 lg:grid-cols-5 gap-2">
+              <!-- Palette 1 to 100 -->
+            </div>
+          </div>
+
+          <div class="pt-2 border-t border-slate-100">
+            <button onclick="confirmSubmitExam()" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i> Final Submit Test
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: SCORECARD & REVIEW -->
+    <section id="result-screen" class="hidden space-y-6 py-4">
+      <div class="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5 mb-6">
+          <div>
+            <span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+              Test Completed
+            </span>
+            <h3 id="result-exam-title" class="text-xl sm:text-2xl font-black mt-2 text-white">Scorecard</h3>
+            <p id="result-candidate-info" class="text-xs text-slate-400 mt-0.5">Candidate: Student • Target Exam</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="showScreen('dashboard-screen')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold border border-slate-700 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-house"></i> Dashboard
+            </button>
+            <a href="https://t.me/studentquiz1" target="_blank" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <i class="fa-brands fa-telegram"></i> Telegram Group
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700">
+            <p class="text-[11px] text-slate-400 font-bold uppercase">Final Score</p>
+            <h4 id="result-score" class="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">0.0</h4>
+            <p class="text-[10px] text-slate-400">Total Marks: 100.0</p>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700">
+            <p class="text-[11px] text-slate-400 font-bold uppercase">Accuracy</p>
+            <h4 id="result-accuracy" class="text-2xl sm:text-3xl font-black text-teal-400 mt-1">0%</h4>
+            <p class="text-[10px] text-slate-400">Correct vs Attempted</p>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700">
+            <p class="text-[11px] text-slate-400 font-bold uppercase">Correct / Wrong</p>
+            <h4 class="text-lg sm:text-xl font-black mt-1">
+              <span id="result-correct" class="text-emerald-400">0</span> / 
+              <span id="result-wrong" class="text-rose-400">0</span>
+            </h4>
+            <p class="text-[10px] text-slate-400">Unattempted: <span id="result-unattempted">0</span></p>
+          </div>
+
+          <div class="bg-slate-800/60 rounded-2xl p-4 border border-slate-700">
+            <p class="text-[11px] text-slate-400 font-bold uppercase">State Rank (Mock)</p>
+            <h4 id="result-rank" class="text-2xl sm:text-3xl font-black text-amber-400 mt-1">#42</h4>
+            <p class="text-[10px] text-slate-400">Among All Candidates</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Solutions Review -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="text-base sm:text-lg font-black text-slate-900">Detailed Answer Explanations</h4>
+            <p class="text-xs text-slate-500">Review all questions with correct answers and step-by-step solutions</p>
+          </div>
+          <span class="text-xs font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg" id="solutions-count-badge">100 Solutions</span>
+        </div>
+
+        <div id="solutions-list" class="space-y-4 pt-2">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white/80 backdrop-blur-md border-t border-slate-200 py-4 text-center text-xs text-slate-600 font-medium">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 स्टूडेंट अड्डा (Student Adda). सर्वाधिकार सुरक्षित।</p>
+      <p class="font-bold text-emerald-700 flex items-center gap-1.5">
+        <span>Created by Ayush</span>
+        <i class="fa-solid fa-code text-slate-400"></i>
+      </p>
+    </div>
+  </footer>
+
+  <!-- SUBMIT MODAL -->
+  <div id="modal-confirm-submit" class="hidden fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 space-y-4">
+      <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl mx-auto">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="text-center">
+        <h4 class="text-base font-bold text-slate-900">Submit Examination?</h4>
+        <p class="text-xs text-slate-500 mt-1">Are you sure you want to submit your test paper? You will not be able to modify your choices after this.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 text-xs p-3 rounded-xl bg-slate-50 border border-slate-200 font-medium">
+        <div class="text-slate-600">Attempted: <span id="modal-stat-attempted" class="font-bold text-emerald-600">0</span></div>
+        <div class="text-slate-600">Unanswered: <span id="modal-stat-unanswered" class="font-bold text-rose-600">0</span></div>
+      </div>
+
+      <div class="flex items-center gap-2 pt-2">
+        <button onclick="closeSubmitModal()" class="flex-1 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition">
+          Resume
+        </button>
+        <button onclick="executeExamSubmission()" class="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-md shadow-rose-600/30">
+          Yes, Submit
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-5 right-5 z-50 max-w-xs w-full bg-slate-900 text-white p-3.5 rounded-2xl shadow-xl border border-slate-700 translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-start gap-3">
+    <div id="toast-icon" class="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm mt-0.5 shrink-0">
+      <i class="fa-solid fa-check"></i>
+    </div>
+    <div class="flex-1">
+      <h5 id="toast-title" class="text-xs font-bold text-white">Notice</h5>
+      <p id="toast-msg" class="text-[11px] text-slate-300 mt-0.5 leading-snug">Information message</p>
+    </div>
+  </div>
+
+  <!-- FIREBASE CONFIGURATION & LOGIC -->
+  <script>
+    // ----------------------------------------------------
+    // YOUR VERIFIED FIREBASE CONFIGURATION (students-adda-79994)
+    // ----------------------------------------------------
+    const firebaseConfig = {
+      apiKey: "AIzaSyArWZwROAq0_aAl7JCE7H6c9N26ckquaWk",
+      authDomain: "students-adda-79994.firebaseapp.com",
+      projectId: "students-adda-79994",
+      storageBucket: "students-adda-79994.firebasestorage.app",
+      messagingSenderId: "452929019966",
+      appId: "1:452929019966:web:59420aef5058f8fc61f16f",
+      measurementId: "G-M61V64MPTQ"
+    };
+
+    // Initialize Firebase & Firestore
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      console.log("Firebase Connected Successfully: students-adda-79994");
+    } catch (err) {
+      console.warn("Firebase Init Error (Local fallback enabled):", err.message);
+    }
+
+    let currentAppLang = 'en';
+    let currentUser = null;
+    let currentAuthMode = 'login';
+    let selectedExamType = 'bihar_police';
+    let activeTestQuestions = [];
+    let currentQuestionIdx = 0;
+    let userAnswers = {};
+    let markedForReview = {};
+    let examTimerInterval = null;
+    let timeRemainingSeconds = 3600;
+
+    let MASTER_JSON_DATA = {};
+
+    const I18N = {
+      en: {
+        langDisplay: "Language: English",
+        authMainTitle: "Welcome to Student Adda",
+        authSubtitle: "Free Targeted Mock Tests with 25 Sets & 100 Questions (60 Min)",
+        tabLogin: "Student Login",
+        tabRegister: "New Registration",
+        labelName: "Student Full Name *",
+        labelPhone: "Mobile Number (10 Digits) *",
+        labelPassword: "Password *",
+        badgeMinPwd: "Min. 6 characters",
+        btnLogin: "Login to Dashboard",
+        btnRegister: "Complete Registration",
+        dashBadge: "Targeted Exam Prep",
+        dashGreeting: "Welcome, Aspirant!",
+        dashMotto: "Select your target examination below. Each exam contains 25 full mock sets of 100 questions with 60 minutes countdown timer — completely FREE!",
+        titleTargetedExams: "Targeted Examinations",
+        descTargetedExams: "Choose one of the 4 designated exams to view all 25 test sets (All Free)",
+        cbtMarkCorrect: "+1.0 Correct",
+        cbtMarkWrong: "-0.2 Wrong"
+      },
+      hi: {
+        langDisplay: "भाषा: हिंदी",
+        authMainTitle: "स्टूडेंट अड्डा में आपका स्वागत है",
+        authSubtitle: "25 सेट एवं 100 प्रश्नों वाले निःशुल्क मॉक टेस्ट (60 मिनट)",
+        tabLogin: "विद्यार्थी लॉगिन",
+        tabRegister: "नया पंजीकरण",
+        labelName: "विद्यार्थी का पूरा नाम *",
+        labelPhone: "मोबाइल नंबर (10 अंक) *",
+        labelPassword: "पासवर्ड *",
+        badgeMinPwd: "कम से कम 6 अक्षर",
+        btnLogin: "डैशबोर्ड में लॉगिन करें",
+        btnRegister: "पंजीकरण पूरा करें",
+        dashBadge: "लक्षित परीक्षा तैयारी",
+        dashGreeting: "स्वागत है, अभ्यर्थी!",
+        dashMotto: "नीचे अपनी लक्षित परीक्षा चुनें। प्रत्येक परीक्षा में 100 प्रश्नों एवं 60 मिनट टाइमर वाले 25 पूरे मॉक टेस्ट सेट पूर्णतः निःशुल्क उपलब्ध हैं।",
+        titleTargetedExams: "लक्षित परीक्षाएं (Targeted Exams)",
+        descTargetedExams: "सभी 25 टेस्ट सेट देखने के लिए 4 मुख्य परीक्षाओं में से एक का चयन करें (पूर्णतः फ्री)",
+        cbtMarkCorrect: "+1.0 सही उत्तर",
+        cbtMarkWrong: "-0.2 नकारात्मक अंक"
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedUser = localStorage.getItem('student_adda_current_session');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          updateNavUser();
+          showScreen('dashboard-screen');
+        } catch (e) {
+          showScreen('auth-screen');
+        }
+      } else {
+        showScreen('auth-screen');
+      }
+
+      applyTranslations();
+      loadCloudOrLocalQuestions();
+    });
+
+    // 1. प्रश्न लोड करें: पहले Firebase Cloud चेक करें, न होने पर लोकल/फाइल
+    async function loadCloudOrLocalQuestions() {
+      if (db) {
+        try {
+          const doc = await db.collection("exams").doc("questions").get();
+          if (doc.exists && Object.keys(doc.data()).length > 0) {
+            MASTER_JSON_DATA = doc.data();
+            console.log("Questions Loaded from Firestore Cloud");
+            updateExamCounters();
+            return;
+          }
+        } catch (e) {
+          console.warn("Firestore fetch error, fallback to local:", e);
+        }
+      }
+
+      const customQuestions = localStorage.getItem('custom_master_questions');
+      if (customQuestions) {
+        try {
+          MASTER_JSON_DATA = JSON.parse(customQuestions);
+          updateExamCounters();
+          return;
+        } catch (e) {}
+      }
+
+      const possibleFiles = ['./questions.json', './question.json', 'questions.json', 'question.json'];
+      for (let path of possibleFiles) {
+        try {
+          const res = await fetch(path + '?v=' + Date.now());
+          if (res.ok) {
+            let text = await res.text();
+            try {
+              MASTER_JSON_DATA = JSON.parse(text);
+            } catch (err) {
+              const lastValidBrace = text.lastIndexOf('}');
+              if (lastValidBrace !== -1) {
+                MASTER_JSON_DATA = JSON.parse(text.substring(0, lastValidBrace + 1) + ']}');
+              }
+            }
+            updateExamCounters();
+            return;
+          }
+        } catch (e) {}
+      }
+    }
+
+    function getQuestionsFromMaster(keyPattern) {
+      if (!MASTER_JSON_DATA) return [];
+      const keys = Object.keys(MASTER_JSON_DATA);
+      const cleanPattern = keyPattern.toLowerCase().replace(/[^a-z]/g, '');
+      
+      for (let k of keys) {
+        const cleanKey = k.toLowerCase().replace(/[^a-z]/g, '');
+        if (cleanKey === cleanPattern || cleanKey.includes(cleanPattern)) {
+          return MASTER_JSON_DATA[k] || [];
+        }
+      }
+      return [];
+    }
+
+    function updateExamCounters() {
+      const bp = getQuestionsFromMaster("biharpolice");
+      const daroga = getQuestionsFromMaster("bihardaroga");
+      
+      const bpBadge = document.getElementById('badge-bp-total-q');
+      const siBadge = document.getElementById('badge-si-total-q');
+      
+      if (bpBadge) {
+        bpBadge.textContent = bp.length > 0 ? `कुल ${bp.length} प्रश्न उपलब्ध` : `प्रश्न: 1 से 2500 तक`;
+      }
+      if (siBadge) {
+        siBadge.textContent = daroga.length > 0 ? `कुल ${daroga.length} प्रश्न उपलब्ध` : `प्रश्न: 1 से 2600 तक`;
+      }
+    }
+
+    function showScreen(screenId) {
+      ['auth-screen', 'dashboard-screen', 'set-selection-screen', 'cbt-screen', 'result-screen'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      });
+      const target = document.getElementById(screenId);
+      if (target) {
+        target.classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function handleLogoClick() {
+      if (currentUser) {
+        showScreen('dashboard-screen');
+      } else {
+        showScreen('auth-screen');
+      }
+    }
+
+    /* FIREBASE CLOUD AUTHENTICATION */
+    function switchAuthTab(mode) {
+      currentAuthMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabRegister = document.getElementById('tab-register');
+      const nameContainer = document.getElementById('field-name-container');
+      const submitBtnText = document.getElementById('btn-auth-text');
+
+      clearAuthErrors();
+
+      if (mode === 'login') {
+        tabLogin.className = "flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition shadow-sm bg-white text-slate-900 border border-slate-200";
+        tabRegister.className = "flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-slate-500 hover:text-slate-800";
+        nameContainer.classList.add('hidden');
+        submitBtnText.textContent = I18N[currentAppLang].btnLogin;
+      } else {
+        tabRegister.className = "flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition shadow-sm bg-white text-slate-900 border border-slate-200";
+        tabLogin.className = "flex-1 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition text-slate-500 hover:text-slate-800";
+        nameContainer.classList.remove('hidden');
+        submitBtnText.textContent = I18N[currentAppLang].btnRegister;
+      }
+    }
+
+    function clearAuthErrors() {
+      ['error-name', 'error-phone', 'error-password'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('hidden'); el.textContent = ''; }
+      });
+    }
+
+    function togglePasswordVisibility(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = "fa-regular fa-eye-slash text-sm";
+      } else {
+        input.type = 'password';
+        icon.className = "fa-regular fa-eye text-sm";
+      }
+    }
+
+    async function handleAuthSubmit() {
+      clearAuthErrors();
+      let hasError = false;
+
+      const phone = document.getElementById('input-phone').value.trim();
+      const password = document.getElementById('input-password').value.trim();
+      let name = "";
+
+      if (currentAuthMode === 'register') {
+        name = document.getElementById('input-name').value.trim();
+        if (!name || name.length < 2) {
+          const errEl = document.getElementById('error-name');
+          errEl.textContent = currentAppLang === 'hi' ? 'कृपया अपना पूरा नाम दर्ज करें।' : 'Full Name is required.';
+          errEl.classList.remove('hidden');
+          hasError = true;
+        }
+      }
+
+      const phoneRegex = /^[5-9]\d{9}$/;
+      if (!phone || phone.length !== 10 || !phoneRegex.test(phone)) {
+        const errEl = document.getElementById('error-phone');
+        errEl.textContent = currentAppLang === 'hi' ? 'मान्य 10 अंकों का मोबाइल नंबर दर्ज करें।' : 'Valid 10-digit mobile number required.';
+        errEl.classList.remove('hidden');
+        hasError = true;
+      }
+
+      if (!password || password.length < 6) {
+        const errEl = document.getElementById('error-password');
+        errEl.textContent = currentAppLang === 'hi' ? 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।' : 'Password must be at least 6 characters.';
+        errEl.classList.remove('hidden');
+        hasError = true;
+      }
+
+      if (hasError) return;
+
+      const submitBtn = document.getElementById('btn-auth-submit');
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-75');
+
+      try {
+        if (currentAuthMode === 'register') {
+          // 1. क्लाउड में जांचें कि यूजर पहले से तो नहीं है
+          if (db) {
+            const userDoc = await db.collection("candidates").doc(phone).get();
+            if (userDoc.exists) {
+              const errEl = document.getElementById('error-phone');
+              errEl.textContent = currentAppLang === 'hi' ? 'यह नंबर पहले से पंजीकृत है! कृपया लॉगिन करें।' : 'Mobile number already registered! Please login.';
+              errEl.classList.remove('hidden');
+              submitBtn.disabled = false;
+              submitBtn.classList.remove('opacity-75');
+              return;
+            }
+
+            // क्लाउड में नया यूजर जोड़ें
+            await db.collection("candidates").doc(phone).set({
+              name: name,
+              phone: phone,
+              password: password,
+              registeredAt: firebase.firestore.FieldValue.serverTimestamp()
+            });
+          }
+
+          // लोकल बैकअप
+          let localUsers = JSON.parse(localStorage.getItem('registered_candidates') || '[]');
+          localUsers.push({ name, phone, password });
+          localStorage.setItem('registered_candidates', JSON.stringify(localUsers));
+
+          currentUser = { name, phone };
+          localStorage.setItem('student_adda_current_session', JSON.stringify(currentUser));
+          updateNavUser();
+          showScreen('dashboard-screen');
+          showToast('success', 'Registration Successful', `Welcome, ${name}!`);
+
+        } else {
+          // 2. लॉगिन: क्लाउड जांच
+          let foundUser = null;
+
+          if (db) {
+            const userDoc = await db.collection("candidates").doc(phone).get();
+            if (userDoc.exists) {
+              foundUser = userDoc.data();
+            }
+          }
+
+          // अगर क्लाउड पर न मिले तो लोकल स्टोरेज में देखें
+          if (!foundUser) {
+            const localUsers = JSON.parse(localStorage.getItem('registered_candidates') || '[]');
+            foundUser = localUsers.find(u => u.phone === phone);
+          }
+
+          if (!foundUser) {
+            const errEl = document.getElementById('error-phone');
+            errEl.textContent = currentAppLang === 'hi' ? 'यह मोबाइल नंबर रजिस्टर नहीं है! पहले पंजीकरण करें।' : 'Mobile number not registered! Please register.';
+            errEl.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-75');
+            return;
+          }
+
+          if (foundUser.password !== password) {
+            const errEl = document.getElementById('error-password');
+            errEl.textContent = currentAppLang === 'hi' ? 'गलत पासवर्ड! कृपया पुनः प्रयास करें।' : 'Incorrect password! Please try again.';
+            errEl.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('opacity-75');
+            return;
+          }
+
+          currentUser = { name: foundUser.name, phone: foundUser.phone };
+          localStorage.setItem('student_adda_current_session', JSON.stringify(currentUser));
+          updateNavUser();
+          showScreen('dashboard-screen');
+          showToast('success', 'Login Successful', `Welcome back, ${foundUser.name}!`);
+        }
+      } catch (err) {
+        console.error("Auth error:", err);
+        showToast('error', 'Error', err.message);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('opacity-75');
+      }
+    }
+
+    function updateNavUser() {
+      const profile = document.getElementById('nav-user-profile');
+      const nameEl = document.getElementById('nav-user-name');
+      const phoneEl = document.getElementById('nav-user-phone');
+      const dashGreeting = document.getElementById('dash-greeting');
+
+      if (currentUser) {
+        profile.classList.remove('hidden');
+        profile.classList.add('flex');
+        nameEl.textContent = currentUser.name || "Student";
+        phoneEl.textContent = currentUser.phone || "";
+        dashGreeting.textContent = currentAppLang === 'hi' 
+          ? `नमस्ते, ${currentUser.name || 'अभ्यर्थी'}!` 
+          : `Welcome, ${currentUser.name || 'Aspirant'}!`;
+      } else {
+        profile.classList.add('hidden');
+        profile.classList.remove('flex');
+      }
+    }
+
+    function logoutCandidate() {
+      localStorage.removeItem('student_adda_current_session');
+      currentUser = null;
+      updateNavUser();
+      showScreen('auth-screen');
+      showToast('info', 'Logged Out', 'You have been logged out.');
+    }
+
+    /* EXAM & 25 SETS NAVIGATION */
+    const EXAM_CONFIG = {
+      bihar_police: { titleHi: "बिहार पुलिस (कांस्टेबल)", titleEn: "Bihar Police (Constable)", badge: "Exam 1", searchPattern: "biharpolice" },
+      bihar_daroga: { titleHi: "बिहार दारोगा (SI)", titleEn: "Bihar Daroga", badge: "Exam 2", searchPattern: "bihardaroga" },
+      reasoning: { titleHi: "तर्कशक्ति (रीजनिंग)", titleEn: "Reasoning", badge: "Exam 3", searchPattern: "reason" },
+      maths: { titleHi: "गणित (मैथ्स)", titleEn: "Maths", badge: "Exam 4", searchPattern: "math" }
+    };
+
+    function openExamSetSelection(examKey) {
+      selectedExamType = examKey;
+      const config = EXAM_CONFIG[examKey];
+      
+      document.getElementById('set-exam-badge').textContent = config.badge;
+      document.getElementById('set-selection-exam-title').textContent = currentAppLang === 'hi' ? config.titleHi : config.titleEn;
+
+      render25SetsGrid(examKey);
+      showScreen('set-selection-screen');
+    }
+
+    function render25SetsGrid(examKey) {
+      const container = document.getElementById('sets-container');
+      container.innerHTML = '';
+
+      for (let i = 1; i <= 25; i++) {
+        const setNumFormatted = i < 10 ? `0${i}` : `${i}`;
+        const card = document.createElement('div');
+        card.className = `bg-white rounded-2xl border border-slate-200 hover:border-emerald-500 p-4 transition-all duration-200 shadow-sm hover:shadow-md flex flex-col justify-between group`;
+        
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[11px] font-black font-mono text-emerald-700 bg-emerald-50 border-emerald-200 px-2 py-0.5 rounded border">
+                SET ${setNumFormatted}
+              </span>
+              <span class="text-[10px] font-bold flex items-center gap-1 text-emerald-600">
+                <i class="fa-solid fa-circle-check"></i>
+                <span>100% FREE</span>
+              </span>
+            </div>
+            <h4 class="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition">Full Mock Test ${setNumFormatted}</h4>
+            <div class="mt-2 space-y-1 text-[11px] text-slate-500 font-medium">
+              <p><i class="fa-solid fa-list-check text-slate-400 mr-1.5"></i>100 Questions</p>
+              <p><i class="fa-regular fa-clock text-slate-400 mr-1.5"></i>60 Minutes Duration</p>
+              <p><i class="fa-solid fa-award text-slate-400 mr-1.5"></i>100 Marks (+1, -0.2)</p>
+            </div>
+          </div>
+          <button onclick="handleSetClick('${examKey}', ${i})" 
+                  class="mt-4 w-full py-2 rounded-xl text-white text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-sm bg-slate-900 group-hover:bg-emerald-600">
+            <i class="fa-solid fa-play text-[10px]"></i>
+            <span>Start Set ${setNumFormatted}</span>
+          </button>
+        `;
+        container.appendChild(card);
+      }
+    }
+
+    function handleSetClick(examKey, setNum) {
+      startSpecificExamSet(examKey, setNum);
+    }
+
+    function startSpecificExamSet(examKey, setNum) {
+      const config = EXAM_CONFIG[examKey];
+      const examTitle = `${currentAppLang === 'hi' ? config.titleHi : config.titleEn} - Mock Set ${setNum < 10 ? '0' + setNum : setNum}`;
+
+      let bank = getQuestionsFromMaster(config.searchPattern);
+
+      const startIndex = (setNum - 1) * 100;
+      let setQuestions = bank.slice(startIndex, startIndex + 100);
+
+      if (!setQuestions || setQuestions.length === 0) {
+        showToast('error', 'No Questions Found', `Set ${setNum} के लिए प्रश्न नहीं मिले।`);
+        return;
+      }
+
+      activeTestQuestions = setQuestions.map((item, idx) => {
+        const opts = item.options || [];
+        let correctIdx = 0;
+        if (item.answer !== undefined) {
+          const mIdx = opts.findIndex(o => String(o).trim() === String(item.answer).trim());
+          if (mIdx !== -1) correctIdx = mIdx;
+        }
+        return {
+          id: item.id || (idx + 1),
+          category: item.category || "General",
+          qHi: item.question || `Question ${idx + 1}`,
+          options: opts,
+          correct: correctIdx,
+          exp: `सही उत्तर: ${opts[correctIdx] || 'Option ' + (correctIdx + 1)}`
+        };
+      });
+
+      currentQuestionIdx = 0;
+      userAnswers = {};
+      markedForReview = {};
+
+      document.getElementById('exam-header-title').textContent = examTitle;
+      document.getElementById('exam-user-tag').textContent = `Candidate: ${currentUser?.name || 'Student'} • ${activeTestQuestions.length} Questions (60 Min)`;
+
+      renderPalette();
+      renderQuestion(0);
+      startExamTimer(60 * 60);
+
+      showScreen('cbt-screen');
+      showToast('success', 'Test Started', `Set ${setNum} started (${activeTestQuestions.length} questions).`);
+    }
+
+    /* CBT RUNTIME ENGINE */
+    function renderPalette() {
+      const palette = document.getElementById('palette-grid');
+      palette.innerHTML = '';
+      document.getElementById('palette-counter').textContent = `${activeTestQuestions.length} Questions`;
+
+      activeTestQuestions.forEach((q, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `palette-btn-${idx}`;
+        btn.textContent = idx + 1;
+        btn.className = "w-full aspect-square rounded-xl text-xs font-bold font-mono transition flex items-center justify-center palette-not-visited";
+        btn.onclick = () => renderQuestion(idx);
+        palette.appendChild(btn);
+      });
+      updatePaletteButton(currentQuestionIdx);
+    }
+
+    function updatePaletteButton(idx) {
+      const btn = document.getElementById(`palette-btn-${idx}`);
+      if (!btn) return;
+
+      btn.classList.remove('palette-answered', 'palette-not-answered', 'palette-marked', 'palette-marked-answered', 'palette-not-visited', 'palette-active');
+
+      const isAnswered = userAnswers[idx] !== undefined;
+      const isMarked = markedForReview[idx] === true;
+
+      if (isMarked && isAnswered) {
+        btn.classList.add('palette-marked-answered');
+      } else if (isMarked) {
+        btn.classList.add('palette-marked');
+      } else if (isAnswered) {
+        btn.classList.add('palette-answered');
+      } else {
+        btn.classList.add('palette-not-answered');
+      }
+
+      if (idx === currentQuestionIdx) {
+        btn.classList.add('palette-active');
+      }
+    }
+
+    function renderQuestion(idx) {
+      if (idx < 0 || idx >= activeTestQuestions.length) return;
+      currentQuestionIdx = idx;
+
+      for (let i = 0; i < activeTestQuestions.length; i++) {
+        const b = document.getElementById(`palette-btn-${i}`);
+        if (b) b.classList.remove('palette-active');
+      }
+      const activeB = document.getElementById(`palette-btn-${idx}`);
+      if (activeB) activeB.classList.add('palette-active');
+
+      const q = activeTestQuestions[idx];
+
+      document.getElementById('current-q-index-badge').textContent = `Question: ${idx + 1} / ${activeTestQuestions.length}`;
+      document.getElementById('current-q-category').textContent = q.category || 'General';
+      document.getElementById('question-text-hi').textContent = `${idx + 1}. ${q.qHi}`;
+
+      const optionsContainer = document.getElementById('options-container');
+      optionsContainer.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+
+      (q.options || []).forEach((optText, optIdx) => {
+        const isSelected = userAnswers[idx] === optIdx;
+        const optRow = document.createElement('div');
+        optRow.onclick = () => selectOption(optIdx);
+        optRow.className = `p-3.5 rounded-xl border cursor-pointer transition flex items-center gap-3 ${
+          isSelected 
+            ? 'bg-emerald-50 border-emerald-500 ring-2 ring-emerald-500/20 shadow-sm' 
+            : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50'
+        }`;
+
+        optRow.innerHTML = `
+          <div class="w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center font-mono shrink-0 transition ${
+            isSelected ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700'
+          }">
+            ${letters[optIdx]}
+          </div>
+          <span class="text-xs sm:text-sm font-medium ${isSelected ? 'text-emerald-950 font-bold' : 'text-slate-800'}">
+            ${optText}
+          </span>
+        `;
+        optionsContainer.appendChild(optRow);
+      });
+
+      document.getElementById('btn-prev-q').disabled = (idx === 0);
+      document.getElementById('btn-prev-q').classList.toggle('opacity-50', idx === 0);
+
+      const markBtn = document.getElementById('btn-mark-review');
+      if (markedForReview[idx]) {
+        markBtn.classList.remove('bg-purple-50', 'text-purple-700');
+        markBtn.classList.add('bg-purple-600', 'text-white');
+      } else {
+        markBtn.classList.add('bg-purple-50', 'text-purple-700');
+        markBtn.classList.remove('bg-purple-600', 'text-white');
+      }
+    }
+
+    function selectOption(optIdx) {
+      userAnswers[currentQuestionIdx] = optIdx;
+      updatePaletteButton(currentQuestionIdx);
+      renderQuestion(currentQuestionIdx);
+    }
+
+    function clearCurrentAnswer() {
+      delete userAnswers[currentQuestionIdx];
+      updatePaletteButton(currentQuestionIdx);
+      renderQuestion(currentQuestionIdx);
+    }
+
+    function toggleMarkForReview() {
+      markedForReview[currentQuestionIdx] = !markedForReview[currentQuestionIdx];
+      updatePaletteButton(currentQuestionIdx);
+      if (currentQuestionIdx < activeTestQuestions.length - 1) {
+        renderQuestion(currentQuestionIdx + 1);
+      } else {
+        renderQuestion(currentQuestionIdx);
+      }
+    }
+
+    function saveAndNextQuestion() {
+      updatePaletteButton(currentQuestionIdx);
+      if (currentQuestionIdx < activeTestQuestions.length - 1) {
+        renderQuestion(currentQuestionIdx + 1);
+      } else {
+        confirmSubmitExam();
+      }
+    }
+
+    function navigateQuestion(delta) {
+      const newIdx = currentQuestionIdx + delta;
+      if (newIdx >= 0 && newIdx < activeTestQuestions.length) {
+        renderQuestion(newIdx);
+      }
+    }
+
+    function startExamTimer(durationSeconds) {
+      if (examTimerInterval) clearInterval(examTimerInterval);
+      timeRemainingSeconds = durationSeconds;
+      updateTimerDisplay();
+
+      examTimerInterval = setInterval(() => {
+        timeRemainingSeconds--;
+        updateTimerDisplay();
+
+        if (timeRemainingSeconds <= 0) {
+          clearInterval(examTimerInterval);
+          executeExamSubmission();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const timerEl = document.getElementById('exam-timer');
+      const minutes = Math.floor(timeRemainingSeconds / 60);
+      const seconds = timeRemainingSeconds % 60;
+      const mm = minutes < 10 ? `0${minutes}` : `${minutes}`;
+      const ss = seconds < 10 ? `0${seconds}` : `${seconds}`;
+      timerEl.textContent = `${mm}:${ss}`;
+
+      if (timeRemainingSeconds < 300) {
+        timerEl.classList.add('text-rose-400', 'pulse-urgent');
+      } else {
+        timerEl.classList.remove('text-rose-400', 'pulse-urgent');
+      }
+    }
+
+    function confirmSubmitExam() {
+      const totalQ = activeTestQuestions.length;
+      const attempted = Object.keys(userAnswers).length;
+      document.getElementById('modal-stat-attempted').textContent = attempted;
+      document.getElementById('modal-stat-unanswered').textContent = totalQ - attempted;
+      document.getElementById('modal-confirm-submit').classList.remove('hidden');
+    }
+
+    function closeSubmitModal() {
+      document.getElementById('modal-confirm-submit').classList.add('hidden');
+    }
+
+    async function executeExamSubmission() {
+      closeSubmitModal();
+      if (examTimerInterval) clearInterval(examTimerInterval);
+
+      let correct = 0;
+      let wrong = 0;
+      const total = activeTestQuestions.length;
+
+      activeTestQuestions.forEach((q, idx) => {
+        if (userAnswers[idx] !== undefined) {
+          if (userAnswers[idx] === q.correct) correct++;
+          else wrong++;
+        }
+      });
+
+      const score = Math.max(0, (correct * 1.0) - (wrong * 0.2)).toFixed(2);
+      const accuracy = (correct + wrong > 0) ? Math.round((correct / (correct + wrong)) * 100) : 0;
+      const mockRank = Math.max(1, Math.floor(500 - (score * 4.5)));
+
+      document.getElementById('result-exam-title').textContent = document.getElementById('exam-header-title').textContent;
+      document.getElementById('result-candidate-info').textContent = `Candidate: ${currentUser?.name || 'Student'} • Mobile: ${currentUser?.phone || 'N/A'}`;
+      document.getElementById('result-score').textContent = score;
+      document.getElementById('result-accuracy').textContent = `${accuracy}%`;
+      document.getElementById('result-correct').textContent = correct;
+      document.getElementById('result-wrong').textContent = wrong;
+      document.getElementById('result-unattempted').textContent = total - (correct + wrong);
+      document.getElementById('result-rank').textContent = `#${mockRank}`;
+
+      // FIREBASE CLOUD RECORD SAVE
+      const record = {
+        studentName: currentUser?.name || 'Student',
+        studentPhone: currentUser?.phone || 'N/A',
+        examTitle: document.getElementById('exam-header-title').textContent,
+        score: parseFloat(score),
+        accuracy: accuracy,
+        correct: correct,
+        wrong: wrong,
+        unattempted: total - (correct + wrong),
+        submittedAt: new Date().toISOString()
+      };
+
+      if (db) {
+        try {
+          await db.collection("submissions").add(record);
+          console.log("Submission saved to Firebase Cloud");
+        } catch (e) {
+          console.warn("Failed saving to Firebase:", e);
+        }
+      }
+
+      // लोकल स्टोरेज बैकअप
+      try {
+        let allSubmissions = JSON.parse(localStorage.getItem('student_test_submissions_feed') || '[]');
+        allSubmissions.push({ ...record, timestamp: new Date().toLocaleString('en-IN') });
+        localStorage.setItem('student_test_submissions_feed', JSON.stringify(allSubmissions));
+      } catch (e) {}
+
+      renderSolutionsList();
+      showScreen('result-screen');
+      showToast('success', 'Test Evaluated', `Score: ${score} Marks`);
+    }
+
+    function renderSolutionsList() {
+      const container = document.getElementById('solutions-list');
+      container.innerHTML = '';
+      const letters = ['A', 'B', 'C', 'D'];
+      document.getElementById('solutions-count-badge').textContent = `${activeTestQuestions.length} Solutions`;
+
+      activeTestQuestions.forEach((q, idx) => {
+        const userChoice = userAnswers[idx];
+        const isCorrect = userChoice === q.correct;
+        const isAttempted = userChoice !== undefined;
+
+        let statusBadge = '';
+        if (!isAttempted) {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-600">Unattempted</span>';
+        } else if (isCorrect) {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check mr-1"></i>Correct (+1.0)</span>';
+        } else {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800"><i class="fa-solid fa-xmark mr-1"></i>Wrong (-0.2)</span>';
+        }
+
+        const card = document.createElement('div');
+        card.className = "p-4 sm:p-5 rounded-2xl border border-slate-200 bg-white space-y-3 shadow-sm";
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-700 bg-slate-100 px-3 py-1 rounded-lg">Question ${idx + 1} of ${activeTestQuestions.length}</span>
+              <span class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">${q.category || 'General'}</span>
+            </div>
+            ${statusBadge}
+          </div>
+          <h5 class="text-sm sm:text-base font-bold text-slate-900">${q.qHi}</h5>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-2">
+            ${(q.options || []).map((opt, oIdx) => {
+              const isUserPicked = userChoice === oIdx;
+              const isCorrectOpt = q.correct === oIdx;
+              let optStyle = "bg-slate-50 border-slate-200 text-slate-700";
+              if (isCorrectOpt) optStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold";
+              else if (isUserPicked && !isCorrectOpt) optStyle = "bg-rose-50 border-rose-400 text-rose-900 line-through";
+
+              return `
+                <div class="p-2.5 rounded-xl border flex items-center gap-2 ${optStyle}">
+                  <span class="w-5 h-5 rounded flex items-center justify-center font-mono text-[11px] font-bold bg-white border shrink-0">
+                    ${letters[oIdx]}
+                  </span>
+                  <span>${opt}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="mt-3 p-3 rounded-xl bg-amber-50/70 border border-amber-200 text-xs text-amber-900 space-y-1">
+            <p class="font-bold flex items-center gap-1.5 text-amber-800">
+              <i class="fa-solid fa-lightbulb text-amber-600"></i>
+              <span>Explanation:</span>
+            </p>
+            <p>${q.exp || 'No detailed explanation provided.'}</p>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function toggleLanguageDropdown() {
+      document.getElementById('lang-dropdown-menu').classList.toggle('hidden');
+    }
+
+    function selectAppLanguage(lang) {
+      currentAppLang = lang;
+      document.getElementById('lang-dropdown-menu').classList.add('hidden');
+      
+      const checkEn = document.getElementById('check-lang-en');
+      const checkHi = document.getElementById('check-lang-hi');
+      if (lang === 'hi') {
+        checkEn.classList.add('hidden');
+        checkHi.classList.remove('hidden');
+      } else {
+        checkEn.classList.remove('hidden');
+        checkHi.classList.add('hidden');
+      }
+
+      applyTranslations();
+      showToast('info', 'Language', lang === 'hi' ? 'भाषा हिंदी सेट की गई।' : 'Switched to English.');
+    }
+
+    function applyTranslations() {
+      const t = I18N[currentAppLang];
+      const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+      setText('current-lang-text', t.langDisplay);
+      setText('auth-main-title', t.authMainTitle);
+      setText('auth-subtitle', t.authSubtitle);
+      setText('tab-login', t.tabLogin);
+      setText('tab-register', t.tabRegister);
+      setText('label-name', t.labelName);
+      setText('label-phone', t.labelPhone);
+      setText('label-password', t.labelPassword);
+      setText('badge-pwd-min', t.badgeMinPwd);
+      setText('btn-auth-text', currentAuthMode === 'login' ? t.btnLogin : t.btnRegister);
+      setText('dash-badge', t.dashBadge);
+      setText('dash-motto', t.dashMotto);
+      setText('title-targeted-exams', t.titleTargetedExams);
+      setText('desc-targeted-exams', t.descTargetedExams);
+      setText('cbt-marking-correct', t.cbtMarkCorrect);
+      setText('cbt-marking-wrong', t.cbtMarkWrong);
+
+      if (currentUser) updateNavUser();
+    }
+
+    let toastTimeout = null;
+    function showToast(type, title, message) {
+      const toast = document.getElementById('toast');
+      const toastIcon = document.getElementById('toast-icon');
+      const toastTitle = document.getElementById('toast-title');
+      const toastMsg = document.getElementById('toast-msg');
+
+      if (!toast) return;
+
+      toastTitle.textContent = title;
+      toastMsg.textContent = message;
+
+      if (type === 'error') {
+        toastIcon.className = "w-7 h-7 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center text-sm mt-0.5 shrink-0";
+        toastIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+      } else if (type === 'info') {
+        toastIcon.className = "w-7 h-7 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-sm mt-0.5 shrink-0";
+        toastIcon.innerHTML = '<i class="fa-solid fa-circle-info"></i>';
+      } else {
+        toastIcon.className = "w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm mt-0.5 shrink-0";
+        toastIcon.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+      }
+
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      if (toastTimeout) clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3500);
+    }
+
+    window.addEventListener('click', (e) => {
+      const langBtn = document.getElementById('lang-btn');
+      const langMenu = document.getElementById('lang-dropdown-menu');
+      if (langBtn && langMenu && !langBtn.contains(e.target) && !langMenu.contains(e.target)) {
+        langMenu.classList.add('hidden');
+      }
+    });
+  </script>
+</body>
+</html>
